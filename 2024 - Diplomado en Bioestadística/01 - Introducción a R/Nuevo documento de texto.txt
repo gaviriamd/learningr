@@ -1,8 +1,0 @@
-Ente matemático que tiene una dirección.
-Variables Discreta son las integer
-Variables contínuas son las numeric
-
-Matrices son filas + columnas de un mismo tipo ej categóricas
-Dataframes son filas + columnas que admiten diferentes tipos de variables. 
-
-Definición de R. 
