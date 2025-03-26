@@ -1,0 +1,10 @@
+1 Background
+	– Description of the Data
+	– Null Hypothesis (Ho)
+2 Import the Data into R
+3 Organize the Data and Display the Code Book
+4 Conduct a Visual Data Check Using Graphics
+5 Descriptive Statistics for Initial Analysis of the Data
+6 Quality Assurance, Data Distribution, and Tests for Normality
+7 Statistical Test(s)
+8 Summary of Outcomes

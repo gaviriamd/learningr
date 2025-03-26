@@ -1,0 +1,377 @@
+<div style="text-align: justify">
+
+# ***Capitulo 2***
+
+## **Bioestadística**
+### ***Fredy Medina.***
+
+```{r message=FALSE, warning=FALSE}
+rm(list = ls())
+library(tidyverse)
+library(plotly)
+library(DT)
+library(utf8)
+library(readr)
+library(ggplot2)
+```
+
+
+### ***Tipos de datos:***
+Para iniciar con la clasificación de los datos e identificar los tipos de variables, trabajaremos con la data "Heart Disease". Esta fue obtenida del repositorio de UCI Machine Learning. A este tipo de datos, cuando se manejan en forma de una hoja de cálculo, se le llama dataframe.
+
+El siguiente código realiza los siguientes pasos:
+
+Limpia el entorno de trabajo.
+Carga las bibliotecas necesarias para crear tablas interactivas (DT) y leer datos (readr).
+Define la URL del conjunto de datos sobre enfermedades cardíacas.
+Lee el archivo desde la URL en un dataframe.
+Renombra las columnas del dataframe para mayor claridad.
+Muestra el dataframe en una tabla interactiva.
+```{r}
+rm(list = ls())
+
+url_base= 'https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data'
+
+data <- read.table(url_base, header = TRUE, sep = ",", quote = "", fill = TRUE)
+
+names(data) <- c( "age", "sex", "cp", "trestbps", "chol","fbs", "restecg","thalach","exang", "oldpeak","slope", "ca", "thal", "num")
+
+datatable(data)
+```
+Que significa cada elemento del codigo  
+
+rm(list = ls()):  
+
+Esta línea elimina todos los objetos del entorno de trabajo actual en R. ls() devuelve una lista de todos los   objetos en el entorno de trabajo, y rm(list = ls()) los elimina. Esto se hace para limpiar el entorno y evitar   conflictos con objetos previos.  
+library(DT):  
+
+Carga el paquete DT, que se utiliza para crear tablas interactivas en R. Este paquete es útil para visualizar datos   en una forma de tabla en R Markdown o aplicaciones Shiny.  
+library(readr):  
+
+Carga el paquete readr, que proporciona funciones rápidas y eficientes para leer datos en R. Aunque no se usa directamente en el código proporcionado, es común usar readr para leer archivos de datos.
+url_base = 'https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data':
+
+Define una variable url_base que contiene la URL del archivo de datos. Este archivo es un conjunto de datos sobre enfermedades cardíacas disponible en el repositorio de la UCI.
+dataD <- read.table(url_base, header = TRUE, sep = ",", quote = "", fill = TRUE):
+
+Lee el archivo de datos desde la URL y lo almacena en dataD.
+header = TRUE indica que la primera línea del archivo contiene los nombres de las columnas.
+sep = "," especifica que el separador de campos es una coma, por lo que se espera que el archivo sea CSV.
+quote = "" indica que no hay caracteres de comillas en los datos.
+fill = TRUE permite que las filas con diferentes longitudes se ajusten al tamaño máximo, rellenando con NA donde sea necesario.
+datatable(dataD):
+
+Utiliza la función datatable del paquete DT para mostrar los datos en forma de una tabla interactiva. Esto proporciona una vista dinámica de los datos en una interfaz web con opciones de ordenamiento, filtrado, etc.
+names(dataD) <- c("age", "sex", "cp", "trestbps", "chol", "fbs", "restecg", "thalach", "exang", "oldpeak", "slope", "ca", "thal", "num"):
+
+Asigna nombres de columnas más descriptivos a dataD. Esta línea renombra las columnas del dataframe dataD con los nombres especificados en el vector.  
+
+
+**Tipos de variables**   
+
+
+```{r, echo=FALSE}
+# Instalar y cargar DiagrammeR si no está ya instalado
+if (!require(DiagrammeR)) {
+  install.packages("DiagrammeR")
+}
+library(DiagrammeR)
+
+# Crear el diagrama de flujo
+grViz("
+digraph flowchart {
+  
+  # Definir los estilos de los nodos
+  node [shape=rect, style=rounded, fontname=Helvetica]
+  
+  start [label='Variables', shape=box, style=filled, fillcolor=red]
+  qual [label='Cualitativas', shape=box, style=filled, fillcolor=orange]
+  quant [label='Cuantitativas', shape=box, style=filled, fillcolor=orange]
+  nominal [label='Nominales', shape=box, style=filled, fillcolor=orange]
+  ordinal [label='Ordinales', shape=box, style=filled, fillcolor=orange]
+  discrete [label='Discretas', shape=box, style=filled, fillcolor=orange]
+  continuous [label='Continuas', shape=box, style=filled, fillcolor=orange]
+  
+  # Definir las relaciones entre los nodos
+  start -> qual
+  start -> quant
+  qual -> nominal
+  qual -> ordinal
+  quant -> discrete
+  quant -> continuous
+
+}
+")
+```
+
+Una variable es cualquier característica cuyo valor puede variar entre diferentes objetos en una población.
+
+Las variables se pueden clasificar según su naturaleza en los siguientes tipos:
+
+Univariantes: Estas variables se refieren a observaciones realizadas en una sola variable dentro de un conjunto de datos. En un análisis univariante, solo se examina una variable a la vez.
+
+Bivariantes: En este caso, se realizan observaciones en dos variables para cada unidad experimental. Los datos bivariantes permiten explorar la relación entre dos variables.
+
+Multivariantes: Surgen cuando se realizan observaciones en más de dos variables. Un análisis multivariante considera múltiples variables simultáneamente (donde el análisis bivariado es un caso especial dentro del multivariado).
+
+Tipos de Datos Clásicos
+Numéricos: Los datos que se expresan en una escala numérica. Se dividen en:
+
+Continuos: Datos que pueden tomar cualquier valor dentro de un intervalo. Por ejemplo, la altura o el peso.
+Discretos: Datos que solo pueden tomar valores enteros, como el número de hijos o el número de visitas a una página web.
+Categóricos: Datos que pueden tomar solo un conjunto específico y finito de valores que representan categorías. Se dividen en:
+
+Binario: Un tipo especial de datos categóricos con solo dos posibles valores, como 0/1 o verdadero/falso. También se conoce como dicotómico, lógico, indicador o booleano.
+Ordinal: Datos categóricos que tienen un ordenamiento explícito. Por ejemplo, clasificaciones como "bajo", "medio" y "alto". También se llama factor ordenado.
+
+
+Las siguientes son las variables que cargamos de la data Heart Diseas
+
+"age", "sex", "cp", "trestbps", "chol","fbs", "restecg","thalach","exang", "oldpeak","slope", "ca", "thal", "num"  
+age: edad del paciente   
+sex: Sexo del paciente   
+cp: Tipo de dolor en el pecho  
+  Tipo 1: Angina típica  
+  Tipo 2: Angina Atípica  
+  Tipo 3: Dolor no anginal  
+  Tipo 4: Asintomático  
+trestbps: Presión arterial en reposo en mm Hg al ingreso al hospital   
+chol: Colesterol sérico en mg /dl    
+fbs: azúcar en sangre en ayunas > 120 mg/dl   
+restecg: Resultados electrocardiográficos en reposo   
+  Nivel 0: Normal  
+  Nivel 1: Tener anormalidad de onda ST-T (inversiones de onda T y / o elevación o Depresión de ST de > 005 mV)  
+  Nivel 2: Muestra hipertrofía ventricular izquierda probable o definitiva según los criterios de Estes.  
+thalach: Frecuencia cardiaca máxima alcanzada   
+exang: Angina inducida por el ejercicio   
+oldpeak: Depresión del ST inducida por el ejercicio en relación con el descanso   
+slope: La pendiente del segmento ST de ejercicio pico   
+  Valor 1: ascenso  
+  Valor 2: plano  
+  Valor 3: descenso  
+ca: Numero de vasos principales (0-3) coloreados por fluoroscopia   
+thal: El estado del corazón según la prueba de Thallium   
+  N = normal;  
+  DF = defecto fijo  
+  DR = defecto reversible  
+num : Presencia de enfermedad cardíaca (estado de enfermedad angiográfica)   
+  0: Saludable  
+  1: Diagnosticado como etapa 1  
+  2: Diagnosticado como etapa 2  
+  3: Diagnosticado como etapa 3  
+  4: Diagnosticado como etapa 4  
+  
+  #### ***Ejercicio 1.***
+Clasifique cada una de estas variables y transforme todas las que sean necesarias con los métodos descritos en el documento.
+
+```{r}
+str(data)
+
+```
+str(dataD) muestra la estructura del dataframe dataD, incluyendo el nombre de las columnas y su tipo de datos.
+
+La siguiente línea de código nos permite resumir las variables contenidas en los datos.
+
+```{r}
+summary(data)
+```
+# ***Medidas de Dispersión***
+
+Mientras que la tendencia central proporciona una idea de la ubicación típica de los datos, la dispersión ofrece una perspectiva sobre cómo se distribuyen estos datos alrededor de esa ubicación central. Medir la dispersión es fundamental en estadística, ya que ayuda a entender la variabilidad de los datos, identificar diferencias entre datos, y tomar decisiones basadas en la variabilidad observada.
+
+### ***Palabras Claves***
+
+**Desviaciones:** Las diferencias entre los valores observados y la estimación central de los datos.
+
+**Varianza:** Calculada como la suma de las desviaciones al cuadrado respecto a la media, dividida por \(n-1\), donde \(n\) es el número de observaciones. (también conocida como "mean squared error")
+
+**Desviación Estándar:** Es la raíz cuadrada de la varianza, proporcionando una medida de dispersión en las mismas unidades que los datos originales.
+
+**Desviación Media Absoluta (MAD):** Es el promedio de las desviaciones absolutas respecto a la media, representando una medida robusta de variabilidad. (también conocida como la norma L1 o norma de Manhattan)
+
+**Rango:** La diferencia entre el valor máximo y el valor mínimo en el conjunto de datos.
+
+**Estadística de Orden:** Métricas que se basan en la posición relativa de los datos, ordenados de menor a mayor.
+
+**Percentil \(p\):** El valor que divide los datos de tal manera que el \(p\%\) de los datos son menores o iguales a este valor, y el \((100-p)\%\) restante son mayores o iguales a él.
+
+**Rango Intercuartil (IQR):** La diferencia entre el percentil 75 y el percentil 25, proporcionando una medida de dispersión que no se ve afectada por los valores extremos.
+
+## ***Desviación Estándar y Medidas Relacionadas***
+
+Para evaluar la dispersión, se utilizan a menudo medidas basadas en las desviaciones entre los datos y el valor central estimado. Estas desviaciones indican el grado de variabilidad alrededor de la media.
+
+***Desviación Media Absoluta (MAD)***
+
+Una forma de evaluar la dispersión es calculando un valor representativo para las desviaciones absolutas. A diferencia de la suma simple de las desviaciones, que se cancela, se utiliza el promedio de las desviaciones absolutas para obtener una medida significativa de variabilidad:
+
+$$\text{MAD} = \frac{\sum_{i=1}^{n} |x_i - \bar{x}|}{n}$$
+
+
+#### ***Ejercicio 2.***
+Con este resumen de los datos, describe cada una de las variables en cuanto a su comportamiento y el sentido de estos valores.
+
+Con respecto a los valores faltantes o no existentes, la función summary() también proporciona un resumen que incluye la cantidad de valores NA por columna. Además, lo podemos hacer de la siguiente manera:
+```{r}
+apply(is.na(data), 2, sum)
+```
+
+###**Tablas de Frecuencia e Histogramas  **
+##Histograma  
+
+Un histograma es una herramienta visual que representa una tabla de frecuencias. En este gráfico, los intervalos de   datos se colocan en el eje $x$, mientras que el recuento de datos se muestra en el eje $y$.  
+
+Gráficas y Estimaciones de Densidad
+Relacionada con el histograma, la gráfica de densidad muestra la distribución de los valores de los datos como una   línea continua. Este tipo de gráfico se puede considerar una versión suavizada del histograma y se calcula   generalmente a partir de los datos usando una estimación de la densidad del núcleo.  
+
+Palabras Claves:  
+
+Histograma: Representa los recuentos de frecuencia en el eje $y$ y los valores de las variables en el eje $x$,   ofreciendo una visión general de la distribución de los datos de manera rápida.  
+
+Tabla de Frecuencia: Es una representación tabular de los recuentos de frecuencia que se encuentran en un   histograma.  
+
+Box-plot: Proporciona una visión rápida de la distribución de los datos y se utiliza frecuentemente en   comparaciones de distribuciones cuando se muestran varios box-plots lado a lado.  
+
+Gráfico de Densidad: Ofrece una versión suavizada del histograma y requiere una función para estimar la densidad   del gráfico basada en los datos. Existen múltiples métodos de estimación posibles.  
+
+#### ***Exploración de datos EDA.***
+
+Haremos algunas indicaciones sobre gráficos de barras:
+
+1. Los diagramas (o gráficos) de barras se utilizan para variables cualitativas (categóricas) o para variables cuantitativas discretas. 
+
+2. Los niveles de cada factor o categoría van en el eje $x$.
+
+3. Las frecuencias en el eje $y$. (o proporciones)
+
+```{r}
+# Cargar las librerías necesarias
+library(ggplot2)
+#Modificacion de la data
+#data$sex[data$sex==1]<- "Masculino" asigna Masculino a el valor 1 en la columna sex
+#data$sex[data$sex==0]<- "Femenino"  asigna femenino a el valor 0 en la columna sex
+# Crear gráfico de barras para el sexo
+ggplot(data, aes(x=factor(sex))) +
+  geom_bar(color= "blue") +
+  labs(title="Distribucion por Sexo", x="Sexo", y="Numero de Personas")
+# +
+  #scale_x_discrete(labels=c("0"="Hombre", "1"="Mujer")) + # Ajustar etiquetas según sea necesario
+```
+
+
+
+
+```{r}
+#Modificacion de la data
+#data$sex[data$sex==1]<- "Masculino"
+#data$sex[data$sex==0]<- "Femenino"
+# Crear gráfico de barras para el sexo
+
+
+ggplot(data, aes(x=factor(sex))) +
+  geom_bar(fill="lightcoral", color="black") +
+  labs(title="Distribución por Sexo", x="Sexo", y="Número de Personas") +
+  scale_x_discrete(labels=c("0"="Hombre", "1"="Mujer")) + # Ajustar etiquetas según sea necesario
+  theme_minimal()
+
+```
+```{r}
+
+# Crear gráfico de barras para el sexo con colores diferentes para cada categoría
+ggplot(data, aes(x=factor(sex), fill=factor(sex))) +
+  geom_bar(color="black") +  # Color del borde de las barras
+  scale_fill_manual(values=c("0"="lightblue", "1"="lightcoral")) +  # Especificar colores para cada categoría
+  labs(title="Distribucion por Sexo", x="Sexo", y="# de Personas") +
+  theme_minimal()
+
+```
+La siguiente es otra forma de crear gráficos de barras mediante el agrupamiento por una variable adicional. El código crea una nueva columna llamada age_group en el dataframe, la cual agrupa los valores de la columna age en intervalos específicos utilizando la función cut().
+```{r}
+# Cargar las librerías necesarias
+
+# Crear intervalos de edad
+data$age_group <- cut(data$age, breaks=seq(20, 80, by=5), include.lowest=TRUE)
+
+# Crear gráfico de barras para la edad
+ggplot(data, aes(x=age_group)) +
+  geom_bar(fill="skyblue", color="black") +
+  labs(title="Distribucion de la Edad", x="Grupo de Edad", y="Numero de Personas") +
+  theme_minimal()
+
+
+```
+data$age_group:
+
+Esta parte crea una nueva columna en el dataframe data llamada age_group. Los valores que se generen a partir de la   función cut() se almacenarán en esta nueva columna.  
+cut(data$age, ...):  
+
+La función cut() convierte los valores continuos de data$age en intervalos o "bins" categorizados. En este caso,   agrupa los valores de la columna age en distintos rangos de edad.  
+breaks=seq(20, 80, by=5):  
+
+breaks especifica los límites de los intervalos. Aquí se utiliza la función seq() para generar una secuencia de   números que comienza en 20, termina en 80, y aumenta de 5 en 5.  
+Por ejemplo, los intervalos serían [20, 25), [25, 30), [30, 35), etc., hasta el intervalo final [75, 80]. Esto   agrupa las edades en segmentos de 5 años.  
+include.lowest=TRUE:  
+
+Este argumento asegura que el valor más bajo (en este caso, 20) sea incluido en el primer intervalo. De lo   contrario, podría ser excluido dependiendo de la forma en que los intervalos son definido  
+
+#### ***Ejercicio 3.***
+Transforme la variable "num" en sus categóricas y describa como puede interpretar el siguiente gráfico.
+
+
+```{r}
+ggplot(data, aes(x=factor(age_group), fill=factor(num))) +
+  geom_bar(color="black") +
+  labs(title="num", x="Sexo", y="Número de Personas") +
+  scale_fill_brewer(palette="Set1") +  # Aplicar una paleta de colores de RColorBrewer
+  theme_minimal()
+#num : Presencia de enfermedad cardíaca (estado de enfermedad angiográfica)   
+#  0: Saludable  
+#  1: Diagnosticado como etapa 1  
+#  2: Diagnosticado como etapa 2  
+#  3: Diagnosticado como etapa 3  
+#  4: Diagnosticado como etapa 4  
+
+```
+La gráfica anterior muestra barras agrupadas por rangos de edades, y en cada barra se representa el estado de la enfermedad angiográfica.
+
+
+
+
+```{r}
+
+boxplot(data$age, xlab = "Edades",col = "lightblue",bg = 'transparent',horizontal = T)
+```
+
+que interpretación le puede dar a la anterior grafica con respecto a los datos.
+
+El gráfico muestra que la edad mínima de los pacientes es de 29 años, mientras que la edad máxima es de 77 años. El promedio de edad es de 54 años, con una mediana de 56 años, lo que indica una ligera asimetría negativa en la distribución de la edad, ya que la mediana es mayor que la media. Esta asimetría se puede apreciar en el histograma, donde la línea roja marca la media y la línea negra la mediana. La desviación estándar de las edades es de 9.03 años, lo que sugiere una variación moderada respecto a la media. Además, se observa una mayor concentración de pacientes entre los 50 y 60 años. En el diagrama de cajas, se puede ver que el 25% de los pacientes tienen menos de 48 años, el 50% menos de 56 años, y el 75% menos de 61 años.
+
+
+La siguiente gráfica permite evidenciar la dispersión de los datos en cuanto a la edad y la presión en reposo, junto con una asignación por colores de las categorías para la variable thal (el estado del corazón según la prueba de Thallium).
+
+¿Tiene algún sentido el valor "N" en la gráfica?
+
+responda:
+
+```{r}
+
+
+# Suponiendo que las variables a graficar son thal, age y trestbps (presión sanguínea en reposo)
+ggplot(data, aes(x=age, y=trestbps, color=factor(thal))) +
+  geom_point(size=3) +
+  labs(title="Relación entre Edad, Presión en Reposo y Thal",
+       x="Edad", y="Presión Sanguínea en Reposo", color="Thal") +
+  theme_minimal()
+
+
+```
+
+#### ***Ejercicio 4.***
+Complete todo el análisis descriptivo de cada una de las variables junto con la interpretación de las gráficas   correspondientes. Para esto, utilice diferentes gráficos y las medidas de variabilidad. 
+
+#### ***Ejercicio 5.***
+Redacte al menos 5 conclusiones.
+
+
+
+

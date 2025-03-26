@@ -1,0 +1,27 @@
+{
+    "id": "D98523DB",
+    "path": "C:/Users/juand/iCloudDrive/Epidemiology/CMD/2024 - Diplomado en Bioestadística/01 - Introducción a R/DBS/DBS.R",
+    "project_path": "DBS.R",
+    "type": "r_source",
+    "hash": "2168225332",
+    "contents": "",
+    "dirty": false,
+    "created": 1729346886206.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "tempName": "Untitled1",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "68,0",
+        "scrollLine": "0"
+    },
+    "folds": "0|15|21|0|\n22|17|53|0|\n54|15|66|19|\n67|7|81|42|\n",
+    "lastKnownWriteTime": 1729349109,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1729349109691,
+    "read_only": false,
+    "read_only_alternatives": []
+}

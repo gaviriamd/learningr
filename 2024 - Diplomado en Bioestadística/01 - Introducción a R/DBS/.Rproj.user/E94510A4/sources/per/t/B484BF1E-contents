@@ -1,0 +1,1162 @@
+# HOUSEKEEPING ------------------------------------------------------------
+date() # Current system time and date.
+R.version.string # R version and version release date.
+options(digits=6) # Confirm default digits.
+options(scipen=999)# Suppress scientific notation.
+options(width=60) # Confirm output width.
+ls() # List all objects in the working directory.
+rm(list = ls()) # CAUTION: Remove all files in the
+ls.str() # List all objects with finite detail.
+getwd() # Identify the current working directory.
+setwd("C:/Users/juand/OneDrive - unicauca.edu.co/2024 - Identificación de factores de riesgo de DM II en Cajibio 2023") #Copy & Paste the 
+getwd() # Confirm the working directory.
+load("Id_FR_DMII.rdata")
+list.files() # List files at the PC directory.
+.libPaths() # Library pathname.
+.Library # Library pathname.
+sessionInfo() # R version, locale, and packages.
+search() # Attached packages and objects.
+searchpaths() # Attached packages and objects.sto
+par("mar") # Confirm default margin (BLTR)
+par(mar = c(5.1, 4.1, 4.1, 2.1)) #adjust plot margins
+
+# OPEN LIBRARIES ####
+library(asbio)
+library(tidyverse)
+library(dplyr)
+library(effsize)
+library(Hmisc)
+library(pivottabler)
+library(arsenal)
+library(s20x)
+library(lattice)
+library(effsize)
+library(epiDisplay)
+library(psych)
+library(doBy)
+library(tables)
+library(pastecs)
+library(furniture)
+library(RVAideMemoire)
+library(UsingR)
+library(nortest)
+library(waffle)
+library(scales)
+library(grid)
+library(gridExtra)
+library(ggmosaic)
+library(ggthemes)
+library(ggplot2)
+library(gtsummary)
+library(lubridate)
+library(RcmdrMisc)
+
+####### OPEN DATASET % MAKE IT READEABLE #######
+dat.df <- utils::read.table (file =
+                               "INTSUIDATASET.csv",
+                             header=TRUE, dec=".", sep=",")
+getwd() # Identify the working directory
+ls() # List objects
+attach(dat.df) # Attach the data, for later use
+
+# INSTALL LIBRARIES -------------------------------------------------------
+install.packages("tidyverse", dependencies = TRUE)
+library(tidyverse) # Load the arsenal package.
+help(package=tidyverse) # Show the information page.
+sessionInfo() # Confirm all attached packages.
+install.packages("dplyr", dependencies = TRUE)
+install.packages("effsize", dependencies = TRUE)
+install.packages("Hmisc", dependencies = TRUE)
+install.packages("gtsummary", dependencies = TRUE)
+install.packages("lubridate", dependencies = TRUE)
+install.packages("RcmdrMisc", dependencies = TRUE)
+install.packages("ggplot2", dependencies = TRUE)
+install.packages("ggthemes", dependencies = TRUE)
+install.packages("ggmosaic", dependencies = TRUE)
+install.packages("gridExtra", dependencies = TRUE)
+install.packages("grid", dependencies = TRUE)
+install.packages("scales", dependencies = TRUE)
+install.packages("waffle", dependencies=TRUE)
+install.packages("nortest", dependencies=TRUE)
+install.packages("UsingR", dependencies=TRUE)
+install.packages("RVAideMemoire", dependencies=TRUE)
+install.packages("furniture", dependencies=TRUE)
+install.packages("pastecs", dependencies=TRUE)
+install.packages("tables", dependencies=TRUE)
+install.packages("doBy", dependencies=TRUE)
+install.packages("psych", dependencies=TRUE)
+install.packages("epiDisplay", dependencies=TRUE)
+install.packages("asbio", dependencies=TRUE)
+install.packages("s20x", dependencies=TRUE)
+install.packages("arsenal", dependencies=TRUE)
+install.packages("pivottabler", dependencies=TRUE)
+
+
+# REVIEW OF THE DATA FRAME ------------------------------------------------
+view(dat.df) # To wacht on screen the dataset
+class(dat.df) #class of dat.df object.
+glimpse(dat.df) # Same as above, but better printed.
+head(dat.df, n=3) # Show the head, 1st 3 cases #Standard is 6
+tail(dat.df, n=3) # Show the head, 1st 3 cases #Standard is 6
+dat.df #To see de 1st 30 values of each variable
+summary(dat.df) # Summary statistics
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#               CODE BOOK FOR dat.df               ####
+# # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#                                                     #
+# Sexo ............................. Factor (nominal) #
+#                                      Sexo biológica #
+#                                                     #
+# Edad ........................... Double (Continuos) #
+#                                        Edad en años #
+#                                                     #
+# Etnia .....................Factor (e.g., nominal) #
+# AM (Morning) or PM (Afternoon) class #
+# #
+# Lbs ...................... Numeric (e.g., interval) #
+# Weight (Lbs) of Grade 12 students, most are #
+# 17 to 18 years #
+# #
+# Gender ......................Factor (e.g., nominal) #
+# Female and Male #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+# DATA CLEANING AND MISSING VALUES ----------------------------------------
+glimpse(dat.df) # I believe it´s better than str
+str(dat.df) # base R function
+library(Hmisc)
+describe(dat.df) # detailed summaries of variables
+describe(dat.df[,c( "Sexo", "Edad", "Etnia")]) # Explore 1 by 1 if needed
+plot(describe(dat.df), which = "categorical")
+plot(describe(dat.df), which = "continuous")
+hist(dat.df$Edad, breaks = 50) # histogram of Edad with a suspicious extreme value
+hist(dat.df$NumeroIntentosPrevios, breaks = 5) # histogram of Estancia Hospitalaria with a suspicious extreme value
+
+## Missing Values ####
+describe(dat.df) # detailed summaries of variables
+dat.df$GLUCEMIA_AYUNAS[dat.df$GLUCEMIA_AYUNAS == ""] <- NA # 1 by 1, or
+dadat.df[dat.df == ""] <- NA #all At once
+view(dat.df) # Confirm
+
+dat.df$perihom_catx2[dat.df$perihom_catx2 == ""] <- NA # 1 by 1, or
+
+dat.df$`Perímetro de cintura (Hombres)`[dat.df$`Perímetro de cintura (Hombres)` == ""] <- NA # 1 by 1, or
+
+
+dat.df[dat.df == NA] <- "" #all At once
+view(dat.dfse) # Confirm
+
+## Changing Names of Variables ####
+names(dat.df)[names(dat.df) == "SEXO"] <- "Sexo"
+names(dat.df)[names(dat.df) == "EDAD"] <- "Edad"
+names(dat.df)[names(dat.df) == "PROCEDENCIA"] <- "Procedencia"
+names(dat.df)[names(dat.df) == "CIVIL"] <- "Estado Civil"
+names(dat.df)[names(dat.df) == "AFILIACION"] <- "Seguridad Social"
+names(dat.df)[names(dat.df) == "edad_catx2"] <- "Edad (años)"
+names(dat.df)[names(dat.df) == "IMC_catx2"] <- "Índice de masa corporal Kg/m2"
+names(dat.df)[names(dat.df) == "perihom_catx2"] <- "Perímetro de cintura (Hombres)"
+names(dat.df)[names(dat.df) == "perimu_catx2"] <- "Perímetro de cintura (Mujeres)"
+names(dat.df)[names(dat.df) == "ejercicio_catx2"] <- "Ejercicio (30 minutos diarios)"
+names(dat.df)[names(dat.df) == "frecfrut_verd_catx2"] <- "Consumo de frutas y verduras"
+names(dat.df)[names(dat.df) == "HTAmedi_catx2"] <- "Medicación para HTA"
+names(dat.df)[names(dat.df) == "Hiperglucemia_catx2"] <- "Antecedente de glicemia alterada"
+names(dat.df)[names(dat.df) == "familiares_catx2"] <- "Familiares con antecedente de Diabetes"
+names(dat.df)[names(dat.df) == "Puntaje_findrisc_catx2"] <- "Puntaje Findrisc"
+
+## Correcting misspelling ####
+# Change categories
+describe(SEXO)
+unique(dat.df$SEXO) # Seek or Confirm
+dat.df$SEXO[dat.df$SEXO== "       1"] <- "Femenino" # and Correct
+dat.df$SEXO[dat.df$SEXO== "       2"] <- "Masculino" # and Correct
+
+unique(dat.df$PROCEDENCIA) # Seek or Confirm
+dat.df$PROCEDENCIA[dat.df$PROCEDENCIA== "       1"] <- "Rural" # and Correct
+dat.df$PROCEDENCIA[dat.df$PROCEDENCIA== "       2"] <- "Urbano" # and Correct
+
+unique(dat.df$ETNIA) # Seek or Confirm
+dat.df$ETNIA[dat.df$ETNIA== "       1"] <- "Blanco" # and Correct
+dat.df$ETNIA[dat.df$ETNIA== "       2"] <- "Mestizo" # and Correct
+dat.df$ETNIA[dat.df$ETNIA== "       3"] <- "Indígena" # and Correct
+dat.df$ETNIA[dat.df$ETNIA== "       5"] <- "Afrodescendiente" # and Correct
+
+unique(dat.df$CIVIL) # Seek or Confirm
+dat.df$CIVIL[dat.df$CIVIL== "       1"] <- "Casado" # and Correct
+dat.df$CIVIL[dat.df$CIVIL== "       2"] <- "Unión Libre" # and Correct
+dat.df$CIVIL[dat.df$CIVIL== "       3"] <- "Viudo" # and Correct
+dat.df$CIVIL[dat.df$CIVIL== "       4"] <- "Soltero" # and Correct
+dat.df$CIVIL[dat.df$CIVIL== "       5"] <- "Separado" # and Correct
+
+unique(dat.df$FORMACION) # Seek or Confirm
+ledat.df$FORMACION[dat.df$FORMACION== "       1"] <- "Ninguna" # and Correct
+dat.df$FORMACION[dat.df$FORMACION== "       2"] <- "Básica Primaria" # and Correct
+dat.df$FORMACION[dat.df$FORMACION== "       3"] <- "Secundaria" # and Correct
+dat.df$FORMACION[dat.df$FORMACION== "       4"] <- "Técnica" # and Correct
+dat.df$FORMACION[dat.df$FORMACION== "       5"] <- "Universitaria" # and Correct
+
+unique(dat.df$OCUPACION) # Seek or Confirm
+dat.df$OCUPACION[dat.df$OCUPACION== "       1"] <- "Estudiante" # and Correct
+dat.df$OCUPACION[dat.df$OCUPACION== "       2"] <- "Empleado" # and Correct
+dat.df$OCUPACION[dat.df$OCUPACION== "       3"] <- "Independiente" # and Correct
+dat.df$OCUPACION[dat.df$OCUPACION== "       4"] <- "Desempleado" # and Correct
+dat.df$OCUPACION[dat.df$OCUPACION== "       5"] <- "Hogar" # and Correct
+
+unique(dat.df$AFILIACION) # Seek or Confirm
+dat.df$AFILIACION[dat.df$AFILIACION== "       1"] <- "Subsidiado" # and Correct
+dat.df$AFILIACION[dat.df$AFILIACION== "       2"] <- "Contributivo" # and Correct
+
+unique(dat.df$EJERCICIO) # Seek or Confirm
+dat.df$EJERCICIO[dat.df$EJERCICIO== "       0"] <- "Si" # and Correct
+dat.df$EJERCICIO[dat.df$EJERCICIO== "       2"] <- "No" # and Correct
+
+unique(dat.df$FRECUENCIA_FRUTYVERD) # Seek or Confirm
+dat.df$FRECUENCIA_FRUTYVERD[dat.df$FRECUENCIA_FRUTYVERD== "       0"] <- "Si" # and Correct
+dat.df$FRECUENCIA_FRUTYVERD[dat.df$FRECUENCIA_FRUTYVERD== "       1"] <- "No" # and Correct
+
+unique(dat.df$HTA_MEDICAMENTO) # Seek or Confirm
+dat.df$HTA_MEDICAMENTO[dat.df$HTA_MEDICAMENTO== "       0"] <- "No" # and Correct
+dat.df$HTA_MEDICAMENTO[dat.df$HTA_MEDICAMENTO== "       2"] <- "Si" # and Correct
+
+unique(dat.df$HIPERGLUCEMIA) # Seek or Confirm
+dat.df$HIPERGLUCEMIA[dat.df$HIPERGLUCEMIA== "       0"] <- "No" # and Correct
+dat.df$HIPERGLUCEMIA[dat.df$HIPERGLUCEMIA== "       5"] <- "Si" # and Correct
+
+unique(dat.df$FAMILIARES) # Seek or Confirm
+dat.df$FAMILIARES[dat.df$FAMILIARES== "       0"] <- "Sin Antecedentes" # and Correct
+dat.df$FAMILIARES[dat.df$FAMILIARES== "       3"] <- "Primer Grado (Padres, Hermanos y/o Hijos)" # and Correct
+dat.df$FAMILIARES[dat.df$FAMILIARES== "       5"] <- "Segundo Grado (Abuelos, Tíos y/o Primos)" # and Correct
+
+unique(dat.df$Puntaje_findrisc_catx2) # Seek or Confirm
+dat.df$Puntaje_findrisc_catx2[dat.df$Puntaje_findrisc_catx2== ">12"] <- "Mayor de 12" # and Correct
+dat.df$Puntaje_findrisc_catx2[dat.df$Puntaje_findrisc_catx2== "<12"] <- "Menor de 12" # and Correct
+
+unique(dat.df$EDAD_FINDRISC) # Seek or Confirm
+dat.df$EDAD_FINDRISC[dat.df$EDAD_FINDRISC== "       0"] <- "20 a 44" # and Correct
+dat.df$EDAD_FINDRISC[dat.df$EDAD_FINDRISC== "       2"] <- "45 a 54" # and Correct
+dat.df$EDAD_FINDRISC[dat.df$EDAD_FINDRISC== "       3"] <- "55 a 64" # and Correct
+dat.df$EDAD_FINDRISC[dat.df$EDAD_FINDRISC== "       4"] <- "65 o más" # and Correct
+
+unique(dat.df$GLUCEMIA_AYUNAS) # Seek or Confirm
+dat.df$GLUCEMIA_AYUNAS[dat.df$GLUCEMIA_AYUNAS== "       0"] <- "Normal" # and Correct
+dat.df$GLUCEMIA_AYUNAS[dat.df$GLUCEMIA_AYUNAS== "0"] <- "Normal" # and Correct
+dat.df$GLUCEMIA_AYUNAS[dat.df$GLUCEMIA_AYUNAS== "       1"] <- "Prediabetes (100 - 125 mg/dL)" # and Correct
+dat.df$GLUCEMIA_AYUNAS[dat.df$GLUCEMIA_AYUNAS== "1"] <- "Prediabetes (100 - 125 mg/dL)" # and Correct
+dat.df$GLUCEMIA_AYUNAS[dat.df$GLUCEMIA_AYUNAS== "       2"] <- "Diabetes (Mayor de 126 mg/dL)" # and Correct
+dat.df$GLUCEMIA_AYUNAS[dat.df$GLUCEMIA_AYUNAS== "2"] <- "Diabetes (Mayor de 126 mg/dL)" # and Correct
+
+unique(dat.df$edad_catx2) # Seek or Confirm
+dat.df$edad_catx2[dat.df$edad_catx2== "       1"] <- "Mayor de 45" # and Correct
+dat.df$edad_catx2[dat.df$edad_catx2== "       2"] <- "Menor de 45" # and Correct
+
+unique(dat.df$IMC_catx2) # Seek or Confirm
+dat.df$IMC_catx2[dat.df$IMC_catx2== "       1"] <- "Mayor o igual de 25" # and Correct
+dat.df$IMC_catx2[dat.df$IMC_catx2== "       2"] <- "Menor de 24.9" # and Correct
+
+unique(dataset$perihom_catx2) # Seek or Confirm
+dataset$perihom_catx2[dataset$perihom_catx2== "       1"] <- "Mayor de 94 cm" # and Correct
+dataset$perihom_catx2[dataset$perihom_catx2== "       2"] <- "Menor de 94 cm" # and Correct
+
+unique(dat.df$ejercicio_catx2) # Seek or Confirm
+dat.df$ejercicio_catx2[dat.df$ejercicio_catx2== "       1"] <- "No realiza " # and Correct
+dat.df$ejercicio_catx2[dat.df$ejercicio_catx2== "       2"] <- "Si realiza" # and Correct
+
+unique(dat.df$frecfrut_verd_catx2) # Seek or Confirm
+dat.df$frecfrut_verd_catx2[dat.df$frecfrut_verd_catx2== "       1"] <- "Algunos días" # and Correct
+dat.df$frecfrut_verd_catx2[dat.df$frecfrut_verd_catx2== "       2"] <- "Todos los días" # and Correct
+
+unique(dat.df$Hiperglucemia_catx2) # Seek or Confirm
+dat.df$Hiperglucemia_catx2[dat.df$Hiperglucemia_catx2== "       1"] <- "Con antecedente de hiperglicemia" # and Correct
+dat.df$Hiperglucemia_catx2[dat.df$Hiperglucemia_catx2== "       2"] <- "Sin antecedente de hiperglicemia" # and Correct
+
+unique(dat.df$familiares_catx2) # Seek or Confirm
+dat.df$familiares_catx2[dat.df$familiares_catx2== "       1"] <- "Con antecedente familiares" # and Correct
+dat.df$familiares_catx2[dat.df$familiares_catx2== "       2"] <- "Sin antecedente familiares" # and Correct
+
+unique(dat.df$HTAmedi_catx2) # Seek or Confirm
+dat.df$HTAmedi_catx2[dat.df$HTAmedi_catx2== "       1"] <- "Toma antihipertensivos" # and Correct
+dat.df$HTAmedi_catx2[dat.df$HTAmedi_catx2== "       2"] <- "No toma antihipertensivos" # and Correct
+
+unique(dat.df$perimu_catx2) # Seek or Confirm
+dat.df$perimu_catx2[dat.df$perimu_catx2== "1"] <- "Mayor o igual de 90 cm" # and Correct
+dat.df$perimu_catx2[dat.df$perimu_catx2== "2"] <- "Menor de 89 cm" # and Correct
+
+unique(dat.df$rdm2) # Seek or Confirm
+dat.df$rdm2[dat.df$rdm2== "       1"] <- "Si" # and Correct
+dat.df$rdm2[dat.df$rdm2== "       2"] <- "No" # and Correct
+
+unique(dat.df$`Grupo Poblacional`) # Seek or Confirm
+dat.df$`Grupo Poblacional`[dat.df$`Grupo Poblacional`== "Afrodescendiente"] <- "Otras etnias" # and Correct
+dat.df$`Grupo Poblacional`[dat.df$`Grupo Poblacional`== "Blanco"] <- "Otras etnias" # and Correct
+dat.df$`Grupo Poblacional`[dat.df$`Grupo Poblacional`== "Indígena"] <- "Otras etnias" # and Correct
+
+class(dat.df$Pareja)
+dat.df$Pareja <- as.character(dat.df$Pareja)
+unique(dat.df$Pareja) # Seek or Confirm
+dat.df$Pareja[dat.df$Pareja == "Soltero"] <- "Sin compromiso" # and Correct
+dat.df$Pareja[dat.df$Pareja == "Viudo"] <- "Sin compromiso" # and Correct
+dat.df$Pareja[dat.df$Pareja == "Separado"] <- "Sin compromiso" # and Correct
+dat.df$Pareja[dat.df$Pareja == "Unión Libre"] <- "Con compromiso" # and Correct
+dat.df$Pareja[dat.df$Pareja == "Casado"] <- "Con compromiso" # and Correct
+unique(dat.df$Pareja) # Confirm
+dat.df$Pareja <- as.factor(dat.df$Pareja)
+class(dat.df$Pareja)
+summary(dat.df$Pareja)
+
+class(dat.df$Ingresos)
+dat.df$Ingresos <- as.character(dat.df$Ingresos)
+unique(dat.df$Ingresos) # Seek or Confirm
+dat.df$Ingresos[dat.df$Ingresos == "Estudiante"] <- "Sin ingresos" # and Correct
+dat.df$Ingresos[dat.df$Ingresos == "Hogar"] <- "Sin ingresos" # and Correct
+dat.df$Ingresos[dat.df$Ingresos == "Desempleado"] <- "Sin ingresos" # and Correct
+dat.df$Ingresos[dat.df$Ingresos == "Empleado"] <- "Con ingresos" # and Correct
+dat.df$Ingresos[dat.df$Ingresos == "Independiente"] <- "Con ingresos" # and Correct
+unique(dat.df$Ingresos) # Confirm
+dat.df$Ingresos <- as.factor(dat.df$Ingresos)
+class(dat.df$Ingresos)
+summary(dat.df$Ingresos)
+
+class(dat.df$`Formación Académica`)
+dat.df$`Formación Académica` <- as.character(dat.df$`Formación Académica`)
+unique(dat.df$`Formación Académica`) # Seek or Confirm
+dat.df$`Formación Académica`[dat.df$`Formación Académica` == "Universitaria"] <- "Otras formaciones" # and Correct
+dat.df$`Formación Académica`[dat.df$`Formación Académica` == "Secundaria"] <- "Otras formaciones" # and Correct
+dat.df$`Formación Académica`[dat.df$`Formación Académica` == "Técnica"] <- "Otras formaciones" # and Correct
+dat.df$`Formación Académica`[dat.df$`Formación Académica` == "Ninguna"] <- "Otras formaciones" # and Correct
+unique(dat.df$`Formación Académica`) # Confirm
+dat.df$`Formación Académica` <- as.factor(dat.df$`Formación Académica`)
+class(dat.df$`Formación Académica`)
+summary(dat.df$`Formación Académica`)
+
+class(dat.df$`Índice de masa corporal Kg/m2`)
+dat.df$`Índice de masa corporal Kg/m2` <- as.character(dat.df$`Índice de masa corporal Kg/m2`)
+unique(dat.df$`Índice de masa corporal Kg/m2`) # Seek or Confirm
+dat.df$`Índice de masa corporal Kg/m2`[dat.df$`Índice de masa corporal Kg/m2` == "Menor de 24.9"] <- "Menor de 25" # and Correct
+dat.df$`Índice de masa corporal Kg/m2` <- as.factor(dat.df$`Índice de masa corporal Kg/m2`)
+summary(dat.df$`Índice de masa corporal Kg/m2`)
+
+class(dat.df$`Perímetro de cintura (Hombres)`)
+dat.df$`Perímetro de cintura (Hombres)` <- as.character(dat.df$`Perímetro de cintura (Hombres)`)
+unique(dat.df$`Perímetro de cintura (Hombres)`) # Seek or Confirm
+dat.df$`Perímetro de cintura (Hombres)`[dat.df$`Perímetro de cintura (Hombres)` == "Mayor o igual de 95 cm"] <- "Mayor o igual de 94 cm" # and Correct
+dat.df$`Perímetro de cintura (Hombres)` <- as.factor(dat.df$`Perímetro de cintura (Hombres)`)
+summary(dat.df$`Perímetro de cintura (Hombres)`)
+
+class(dat.df$`Perímetro de cintura (Mujeres)`)
+dat.df$`Perímetro de cintura (Mujeres)` <- as.character(dat.df$`Perímetro de cintura (Mujeres)`)
+unique(dat.df$`Perímetro de cintura (Mujeres)`) # Seek or Confirm
+dat.df$`Perímetro de cintura (Mujeres)`[dat.df$`Perímetro de cintura (Mujeres)` == "Menor de 89 cm"] <- "Menor de 90 cm" # and Correct
+dat.df$`Perímetro de cintura (Mujeres)` <- as.factor(dat.df$`Perímetro de cintura (Mujeres)`)
+summary(dat.df$`Perímetro de cintura (Mujeres)`)
+
+class(dat.df$`Familiares con antecedente de Diabetes`)
+dat.df$`Familiares con antecedente de Diabetes` <- as.character(dat.df$`Familiares con antecedente de Diabetes`)
+unique(dat.df$`Familiares con antecedente de Diabetes`) # Seek or Confirm
+dat.df$`Familiares con antecedente de Diabetes`[dat.df$`Familiares con antecedente de Diabetes` == "       2"] <- "Sin antecedente familiar" # and Correct
+dat.df$`Familiares con antecedente de Diabetes`[dat.df$`Familiares con antecedente de Diabetes` == "       1"] <- "Con antecedente familiar" # and Correct
+dat.df$`Familiares con antecedente de Diabetes` <- as.factor(dat.df$`Familiares con antecedente de Diabetes`)
+summary(dat.df$`Familiares con antecedente de Diabetes`)
+
+class(dat.df$GLUCEMIA_AYUNAS)
+dat.df$GLUCEMIA_AYUNAS <- as.character(dat.df$GLUCEMIA_AYUNAS)
+unique(dat.df$GLUCEMIA_AYUNAS) # Seek or Confirm
+dat.df$GLUCEMIA_AYUNAS[dat.df$GLUCEMIA_AYUNAS == "100 - 125 mg/dL (Prediabetes))"] <- "100 - 125 mg/dL (Prediabetes)" # and Correct
+dat.df$GLUCEMIA_AYUNAS[dat.df$GLUCEMIA_AYUNAS == "Diabetes (Mayor de 126 mg/dL)"] <- "Mayor de 126 mg/dL  (Diabetes)" # and Correct
+dat.df$GLUCEMIA_AYUNAS[dat.df$GLUCEMIA_AYUNAS == "Normal"] <- "Menor de 100 mg/dL (Normal)" # and Correct
+dat.df$GLUCEMIA_AYUNAS <- as.factor(dat.df$GLUCEMIA_AYUNAS)
+summary(dat.df$GLUCEMIA_AYUNAS)
+
+dat.dfse[dat.dfse== "NA"] <- "Sin Información"
+
+## Lowercase, Upper Case, Sentence Case & Title Case ####
+dat.df$Ocupacion <- str_to_sentence(Ocupacion)
+dat.df$Escolaridad <- str_to_sentence(Escolaridad)
+dat.df$EnfermedadFisica <- str_to_sentence(EnfermedadFisica)
+dat.df$EnfermedadMental <- str_to_sentence(EnfermedadMental)
+
+## Now colored by missing values ####
+plot(describe(dat.df))
+plot(describe(dat.df), which = "categorical")
+plot(describe(dat.df), which = "continuous") + scale_color_gradient(low="blue", high="red") # scale_color_gradient() changes the colors used to denote missing
+
+## Look which cases are complete ####
+complete.cases(dat.df) #returns a logical vector of whether each row of x has no missing (TRUE) or at least one NA (FALSE).
+sum(complete.cases(dat.df)) # number of complete cases
+datcc.df <- dat.df[complete.cases(dat.df),] # create a dataset of complete cases
+
+sum(complete.cases(dat.df$Sexo)) # number of complete cases
+sum(complete.cases(dat.df$Procedencia)) # number of complete cases
+sum(complete.cases(dat.df$TieneEnfermedadFisica)) # number of complete cases
+sum(complete.cases(dat.df$TieneEnfermedadMental)) # number of complete cases
+sum(complete.cases(dat.df$IntentosPrevios)) # number of complete cases
+sum(complete.cases(dat.df$Lugar)) # number of complete cases
+sum(complete.cases(dat.df$Premeditacion)) # number of complete cases
+sum(complete.cases(dat.df$Planificacion)) # number of complete cases
+sum(complete.cases(dat.df$GestosDespedida)) # number of complete cases
+sum(complete.cases(dat.df$DeterminacionRiesgo)) # number of complete cases
+sum(complete.cases(dat.df$Riesgo)) # number of complete cases
+sum(complete.cases(dat.df$AltaMismoDia)) # number of complete cases
+sum(complete.cases(dat.df$AltaVoluntaria)) # number of complete cases
+sum(complete.cases(dat.df$Hospitalizacion)) # number of complete cases
+sum(complete.cases(dat.df$FueRemitido)) # number of complete cases
+sum(complete.cases(dat.df$Subregistro)) # number of complete cases
+
+
+dat.dfse <- dat.dfse[ , -32] #this is to remove variables from a ds
+complete.cases(dat.dfse) #returns a logical vector of whether each row of x has no missing (TRUE) or at least one NA (FALSE).
+sum(complete.cases(dat.dfse)) # number of complete cases
+
+## Create Datasets with complete info ####
+CRiesgo <- dat.df[complete.cases(dat.df$Riesgo), ] 
+
+CIntentosPrevios <- dat.df[complete.cases(dat.df$IntentosPrevios), ]
+CPlanificacion <- dat.df[complete.cases(dat.df$Planificacion), ]
+CPremeditacion <- dat.df[complete.cases(dat.df$Premeditacion), ]
+CGestosDespedida <- dat.df[complete.cases(dat.df$GestosDespedida), ]
+CRiesgo <- dat.df[complete.cases(dat.df$Riesgo), ]
+
+## Create crossed datasets with complete info ####
+Riesgo x Intentos Previos
+Riesgo x Tiene Enfermedad Mental
+Riesgo x Premeditación
+Riesgo x Planificación
+Persistencia Ideación x Intentos Previos
+
+RxIP.df <- dat.df[complete.cases(dat.df$Riesgo, dat.df$IntentosPrevios), ]
+RxTEM.df <- dat.df[comdplete.cases(dat.df$Riesgo, dat.df$TieneEnfermedadMental), ]
+RxPre.df <- dat.df[complete.cases(dat.df$Riesgo, dat.df$Premeditacion), ]
+RxPLa.df <- dat.df[complete.cases(dat.df$Riesgo, dat.df$Planificacion), ]
+PIxIP.df <- dat.df[complete.cases(dat.df$PersistenciaIdeacion, dat.df$IntentosPrevios), ]
+
+help(complete.cases)
+## Duplicate a variable ####
+dat.df <- dat.df %>%           # Create duplicate of column with new name
+mutate(rdm2 = Puntaje_findrisc_catx2)
+data_new2                       # Print new data frame
+
+dat.df <- dat.df %>%           # Create duplicate of column with new name
+  mutate(`Grupo Poblacional` = ETNIA)
+data_new2                       # Print new data frame
+
+dat.df <- dat.df %>%           # Create duplicate of column with new name
+  mutate(Pareja =  `Estado Civil`)
+data_new2                       # Print new data frame
+
+dat.df <- dat.df %>%           # Create duplicate of column with new name
+  mutate(Ingresos =  OCUPACION)
+data_new2                       # Print new data frame
+
+dat.df <- dat.df %>%           # Create duplicate of column with new name
+  mutate(`Formación Académica` =  FORMACION)
+data_new2                       # Print new data frame
+
+
+# FACTORS -----------------------------------------------------------------
+glimpse(dat.df) # Explore how many and which character vectors there are
+dat.df$Ocupacion # Example of character vector
+
+dat.df$Ocupacion_fct <- factor(dat.df$Ocupacion) # convert single to factor
+dat.df$Ocupacion_fct # categories in alphabetical order
+
+#### Convert all character to Factors ####
+dat.df[sapply(dat.df, is.character)] <- lapply(dat.df[sapply(dat.df, is.character)], as.factor)
+glimpse(dat.df) # Confirm
+
+# One by one
+dat.df$Peso <- as.double(dat.df$Peso)
+dat.df$talla <- as.double(dat.df$talla)
+
+dat.df$`Grupo Poblacional` <- as.double(dat.df$`Grupo Poblacional`)
+
+#### specifying the order of levels ####
+glimpse(dat.df) # Explore
+unique(dat.df$FORMACION) # See uniqueness
+dat.df$FORMACION <- factor(dat.df$FORMACION, levels = c("Ninguna","Básica Primaria", "Secundaria", "Técnica", "Universitaria"))
+dat.df$FORMACION # See Distributions and Levels
+as.numeric(dat.df$FORMACION) # See underlying integer values 
+
+glimpse(dat.df) # Explore
+unique(dat.df$FAMILIARES) # See uniqueness
+dat.df$FAMILIARES <- factor(dat.df$FAMILIARES, levels = c("Sin antecedentes", "Primer Grado (Padres, Hermanos y/o Hijos)", "Segundo Grado (Abuelos, Tíos y/o Primos)"))
+dat.df$FAMILIARES # See Distributions and Levels
+as.numeric(dat.df$FAMILIARES) # See underlying integer values 
+
+glimpse(dat.df) # Explore
+unique(dat.df$EDAD_FINDRISC) # See uniqueness
+dat.df$EDAD_FINDRISC <- factor(dat.df$EDAD_FINDRISC, levels = c("20 a 44", "45 a 54", "55 a 64", "65 o más"))
+dat.df$EDAD_FINDRISC # See Distributions and Levels
+as.numeric(dat.df$EDAD_FINDRISC) # See underlying integer values 
+
+glimpse(dat.df) # Explore
+unique(dat.df$GLUCEMIA_AYUNAS) # See uniqueness
+dat.df$GLUCEMIA_AYUNAS <- factor(dat.df$GLUCEMIA_AYUNAS, levels = c("Menor de 100 mg/dL (Normal)", "100 - 125 mg/dL (Prediabetes)", "Mayor de 126 mg/dL  (Diabetes)"))
+dat.df$GLUCEMIA_AYUNAS # See Distributions and Levels
+as.numeric(dat.df$GLUCEMIA_AYUNAS) # See underlying integer values 
+
+# NUMBERS -----------------------------------------------------------------
+glimpse(dat.df)
+
+#### Convert all integers (int) to numerics (dbl) ####
+dat.df[sapply(dat.df, is.integer)] <- lapply(dat.df[sapply(dat.df, is.integer)], as.numeric)
+glimpse(dat.df) # Confirm
+
+### # Confirm that the number associated with dat.df$Edad are numeric.####
+dat.df$Edad <-as.numeric(dat.df$Edad)
+length(dat.df$Edad)
+table(is.na(dat.df$Edad))
+
+# 1ST VISUALIZATION OF DATA ---------------------------------------------
+getwd() # Identify the working directory
+ls() # List objects
+attach(dat.df) # Attach the data, for later use
+class(dat.df) # Class
+glimpse(dat.df) # Identify structure
+nrow(dat.df) # List the number of rows
+ncol(dat.df) # List the number of columns
+dim(dat.df) # Dimensions of the data frame
+names(dat.df) # Identify names
+colnames(dat.df) # Show column names
+rownames(dat.df) # Show row names
+head(dat.df) # Show the head
+tail(dat.df) # Show the tail
+dat.df # Show the entire dataframe
+summary(dat.df) # Summary statistics
+Hmisc::describe(dat.df)
+
+
+# CODEBOOK ----------------------------------------------------------------
+#                                                     #
+# Sexo ........................ Factor (e.g., nominal)#
+#                                 Masculino o femenino#
+#                                                     #
+# Edad ...................... Numeric (e.g., Discrete)#
+#                                              En años#
+#                                                     #
+# Etnia ........................Factor (e.g., nominal)#
+#                      Indígena, blanco, mestizo, afro#
+#                                                     #
+# Estado Civil................  Factor (e.g., nominal)#
+#                         Soltero, Unión libre, casado#
+#                                                     #                                                     #
+# Numero de intentos Previos.Numeric (e.g., Discrete) #
+#           Intentos de Suicidio previos a este evento#
+
+
+# EXPLORATION OF NUMERIC (dbl) DATA ---------------------------------------
+glimpse(dat.df)
+
+#### Simple Visual Data Check Using Graphics (Numeric) ####
+par(ask=TRUE)
+plot(density(dat.df$Edad, na.rm=TRUE),
+     main="Edad (Años) de los casos de Intentos de Suicidio
+     Hospital Susana López de Valencia, 2019",
+     col="red", lwd=5)
+
+par(ask=TRUE)
+plot(density(dat.df$NumeroIntentosPrevios, na.rm=TRUE),
+     main="Número de Intentos Previos  de los casos de Intentos de Suicidio
+     Hospital Susana López de Valencia, 2019",
+     col="blue", lwd=5)
+
+par(ask=TRUE)
+plot(density(dat.df$EstanciaHospitalaria, na.rm=TRUE),
+     main="Estancia Hospitalaria de los casos de Intentos de Suicidio
+     Hospital Susana López de Valencia, 2019",
+     col="green", lwd=5)
+
+#### Complex Visual Data Check Using Graphics (Numeric) ####
+par(ask=TRUE) # VISUAL DATA CHECK OF AGE
+par(mfrow=c(2,3)) # 6 figures into a 2 row by 3 column grid
+hist(dat.df$Edad, main="Edad (Años): Histogram")
+plot(dat.df$Edad, main="Edad (Años): Plot")
+plot(density(dat.df$Edad, na.rm=TRUE), # na.rm=TRUE
+     main="Edad (Años): Density Plot") # missing data
+boxplot(dat.df$Edad,
+        main="Edad (Años): Box Plot")
+stripchart(dat.df$Edad,
+           main="Edad (Años): Stripchart") # Stripchart
+qqnorm(dat.df$Edad, main="Edad (Años): Q-Q Plot")
+
+par(ask=TRUE) # VISUAL DATA CHECK OF PREVIOUS ATTEMPS
+par(mfrow=c(2,3)) # 6 figures into a 2 row by 3 column grid
+hist(dat.df$NumeroIntentosPrevios, main="Intentos Previos: Histogram")
+plot(dat.df$NumeroIntentosPrevios, main="Intentos Previos: Plot")
+plot(density(dat.df$NumeroIntentosPrevios, na.rm=TRUE), # na.rm=TRUE
+     main="Intentos Previos: Density Plot") # missing data
+boxplot(dat.df$NumeroIntentosPrevios,
+        main="Intentos Previos: Box Plot")
+stripchart(dat.df$NumeroIntentosPrevios,
+           main="Intentos Previos: Stripchart") # Stripchart
+qqnorm(dat.df$NumeroIntentosPrevios, main="Intentos Previos: Q-Q Plot")
+
+par(ask=TRUE) # VISUAL DATA CHECK OF DAYS HOSPITALIZED
+par(mfrow=c(2,3)) # 6 figures into a 2 row by 3 column grid
+hist(dat.df$EstanciaHospitalaria, main="Estancia Hospitalaria 
+     (Días): Histogram")
+plot(dat.df$EstanciaHospitalaria, main="Estancia Hospitalaria 
+     (Días): Plot")
+plot(density(dat.df$EstanciaHospitalaria, na.rm=TRUE), # na.rm=TRUE
+     main="Estancia Hospitalaria 
+     (Días): Density Plot") # missing data
+boxplot(dat.df$EstanciaHospitalaria,
+        main="Estancia Hospitalaria
+        (Días): Box Plot")
+stripchart(dat.df$EstanciaHospitalaria,
+           main="Estancia Hospitalaria 
+           (Días): Stripchart") # Stripchart
+qqnorm(dat.df$NumeroIntentosPrevios, main="Estancia Hospitalaria 
+       (Días): Q-Q Plot")
+
+####### EXPLORATION OF CATEGORICAL (fct) DATA #######
+glimpse(dat.df)
+
+#### Simple Visual Data Check Using Graphics (Categorical) ####
+par(ask=TRUE) # VISUAL DATA CHECK OF SOCIODEMOGRAPHIC CHARACTERISTICS
+par(mfrow=c(2,4)) # 2 figures into a 1 row by 2 column grid
+barplot(table(dat.df$Sexo),
+        main="Género: Barplot Frequency Distribution",
+        col=c("blue", "red"), ylim=c(0,120)) # Alter color - Y scale
+barplot(table(dat.df$Etnia),
+        main="Edad: Barplot Frequency Distribution",
+        col=c("blue", "red"), ylim=c(0,10)) # Alter color - Y scale
+barplot(table(dat.df$EstadoCivil),
+        main="Estado Civil: Barplot Frequency Distribution",
+        col=c("green", "red"), ylim=c(0,140)) # Alter color - Y scale
+barplot(table(dat.df$Ocupacion),
+        main="Ocupacion: Barplot Frequency Distribution",
+        col=c("green", "red"), ylim=c(0,100)) # Alter color - Y scale
+barplot(table(dat.df$Procedencia),
+        main="Procedencia: Barplot Frequency Distribution",
+        col=c("green", "Blue"), ylim=c(0,120)) # Alter color - Y scale
+barplot(table(dat.df$Estrato),
+        main="Estrato: Barplot Frequency Distribution",
+        col=c("green", "red"), ylim=c(0,120)) # Alter color - Y scale
+barplot(table(dat.df$Escolaridad),
+        main="Escolaridad: Barplot Frequency Distribution",
+        col=c("blue", "red"), ylim=c(0,80)) # Alter color - Y scale
+
+par(ask=TRUE) # VISUAL DATA CHECK OF CLINICAL CHARACTERISTICS
+par(mfrow=c(2,3)) # 2 figures into a 1 row by 2 column grid
+barplot(table(dat.df$TieneEnfermedadFisica),
+        main="Tiene Enfermedad Fisica: Barplot Frequency Distribution",
+        col=c("green", "blue"), ylim=c(0,150)) # Alter color - Y scale
+barplot(table(dat.df$EnfermedadFisica),
+        main="Enfermedad Física: Barplot Frequency Distribution",
+        col=c("gray", "white"), ylim=c(0,150)) # Alter color - Y scale
+barplot(table(dat.df$TieneEnfermedadMental),
+        main="Tiene Enfermedad Mental: Barplot Frequency Distribution",
+        col=c("green", "blue"), ylim=c(0,150)) # Alter color - Y scale
+barplot(table(dat.df$EnfermedadMental),
+        main="Enfermedad Mental: Barplot Frequency Distribution",
+        col=c("green", "blue"), ylim=c(0,150)) # Alter color - Y scale
+barplot(table(dat.df$IntentosPrevios),
+        main="Intentos Previos: Barplot Frequency Distribution",
+        col=c("green", "blue"), ylim=c(0,100)) # Alter color - Y scale
+
+par(ask=TRUE) # VISUAL DATA CHECK OF THE EVENT´S CIRCUMSTANCE
+par(mfrow=c(2,3)) # 2 figures into a 1 row by 2 column grid
+barplot(table(dat.df$Dia),
+        main="Día: Barplot Frequency Distribution",
+        col=c("green", "blue"), ylim=c(0,30)) # Alter color - Y scale
+barplot(table(dat.df$Mes),
+        main="Mes: Barplot Frequency Distribution",
+        col=c("gray", "white"), ylim=c(0,30)) # Alter color - Y scale
+barplot(table(dat.df$Lugar),
+        main="Lugar: Barplot Frequency Distribution",
+        col=c("green", "blue"), ylim=c(0,160)) # Alter color - Y scale
+barplot(table(dat.df$Metodo),
+        main="Método: Barplot Frequency Distribution",
+        col=c("green", "blue"), ylim=c(0,70)) # Alter color - Y scale
+
+par(ask=TRUE) # VISUAL DATA CHECK OF THE EVENT
+par(mfrow=c(2,3)) # 2 figures into a 1 row by 2 column grid
+barplot(table(dat.df$Motivos),
+        main="Motivos: Barplot Frequency Distribution",
+        col=c("green", "blue"), ylim=c(0,60)) # Alter color - Y scale
+barplot(table(dat.df$Premeditacion),
+        main="Premeditación: Barplot Frequency Distribution",
+        col=c("green", "blue"), ylim=c(0,95)) # Alter color - Y scale
+barplot(table(dat.df$Planificacion),
+        main="Planificación: Barplot Frequency Distribution",
+        col=c("green", "blue"), ylim=c(0,150)) # Alter color - Y scale
+barplot(table(dat.df$GestosDespedida),
+        main="Gestos de Despedida: Barplot Frequency Distribution",
+        col=c("green", "blue"), ylim=c(0,150)) # Alter color - Y scale
+
+par(ask=TRUE) # VISUAL DATA CHECK OF CLINICAL ATTENTION
+par(mfrow=c(2,3)) # 2 figures into a 1 row by 2 column grid
+barplot(table(dat.df$DeterminacionRiesgo),
+        main="Se Determinó el Riesgo: Barplot Frequency Distribution",
+        col=c("green", "blue"), ylim=c(0,100)) # Alter color - Y scale
+barplot(table(dat.df$Riesgo),
+        main="Riesgo: Barplot Frequency Distribution",
+        col=c("green", "blue"), ylim=c(0,70)) # Alter color - Y scale
+barplot(table(dat.df$AltaMismoDia),
+        main="El Paciente Fue Egresado el Mismo Día: Barplot Frequency Distribution",
+        col=c("green", "blue"), ylim=c(0,150)) # Alter color - Y scale
+barplot(table(dat.df$AltaVoluntaria),
+        main="El Paciente Solicitó Alta Voluntaria: Barplot Frequency Distribution",
+        col=c("green", "blue"), ylim=c(0,150)) # Alter color - Y scale
+
+par(ask=TRUE) # VISUAL DATA CHECK OF POST-CLINICAL ATTENTION
+par(mfrow=c(2,3)) # 2 figures into a 1 row by 2 column grid
+barplot(table(dat.df$Hospitalizacion),
+        main="El Paciente fue Hospitalizado: Barplot Frequency Distribution",
+        col=c("green", "blue"), ylim=c(0,120)) # Alter color - Y scale
+barplot(table(dat.df$PersistenciaIdeacion),
+        main="Hubo Persistencia de la Ideación Suicidia: Barplot Frequency Distribution",
+        col=c("green", "blue"), ylim=c(0,120)) # Alter color - Y scale
+barplot(table(dat.df$FueRemitido),
+        main="El Paciente Fue Remitido: Barplot Frequency Distribution",
+        col=c("green", "blue"), ylim=c(0,150)) # Alter color - Y scale
+barplot(table(dat.df$Subregistro),
+        main="Hubo Subregistro del Hecho: Barplot Frequency Distribution",
+        col=c("green", "blue"), ylim=c(0,120)) # Alter color - Y scale
+
+# REVIEW OF DATA FRAME ----------------------------------------------------
+library(tidyverse)
+view(dat.df) # To wacht on screen the dataset
+class(dat.df) #class of dat.df object.
+dim(dat.df) #Shows the size Rows and Columns
+utils::str(dat.df) # Identify structure
+glimpse(dat.df) # Same as above, but better printed.
+utils::head(dat.df, n=3) # Show the head, 1st 3 cases #Standard is 6
+utils::tail(dat.df, n=3) # Show the head, 1st 3 cases #Standard is 6
+dat.df #To see de 1st 30 values of each variable
+base::summary(dat.df) # Summary statistics
+
+# DATA DISTRIBUTION AND TEST FOR NORMALITY --------------------------------
+shapiro.test(dat.df$Edad) #What a Beauty! # Shapiro Test
+RVAideMemoire::mshapiro.test(dat.df$Edad) # Normality test of Lbs overall
+RVAideMemoire::byf.shapiro(Edad ~ Sexo,
+                           data=dat.df) # Normality test of Edad by Sexo
+nortest::ad.test(Edad) #The Anderson-Darling Test for Normal Dist.
+
+# Edad (Años), Overall
+QQAños <-
+  ggplot2::ggplot(dat.df,
+                  aes(sample=Edad)) +
+  stat_qq(color="red") +
+  stat_qq_line(color="blue", linewidth=1.75) +
+  ggtitle("
+Imagen 1: Distribución de la Edad de los Pacientes que consultaron por Intento de suicidio", subtitle = "Hospital Susana López de Valencia 2019")+
+  labs(x = "\nTheoretical", y = "Edad (Años)\n") +
+  theme_bw()+
+  theme(panel.background = element_rect(fill = "#72efdd"))
+QQAños
+
+# Edad (Años) by Procedencia (two breakouts)
+QQFacetEdadProcedencia <-
+  ggplot2::ggplot(dat.df,
+                  aes(sample=Edad)) +
+  stat_qq(color="red") +
+  stat_qq_line(color="blue", linewidth=1.75) +
+  facet_grid(. ~ Procedencia) +
+  ggtitle("
+Distribución de la Edad por Prcedencia") +
+  labs(x = "\nTheoretical", y = "Edad (Años)\n") +
+  theme_bw()
+
+# Edad (Años) by Sexo (two breakouts)
+QQFacetEdadSexo <-
+  ggplot2::ggplot(dat.df,
+                  aes(sample=Edad)) +
+  stat_qq(color="red") +
+  stat_qq_line(color="blue", size=1.75) +
+  facet_grid(. ~ Sexo) +
+  ggtitle("
+Distribución de la Edad por el Sexo") +
+  labs(x = "\nTheoretical", y = "Edad (Años)\n") +
+  theme_bw()
+
+gridExtra::grid.arrange(
+  QQAños,
+  QQFacetEdadProcedencia,
+  QQFacetEdadSexo, ncol=3)
+
+# DESCRIPTIVE STATISTICS ####
+## LOCATION (CENTRAL TENDENCY) & VARIABILITY STATISTICS (DISPERSION) -------
+### Single Statistics ####
+utils::head(base::sort(Edad)) # Show the head, first values
+utils::tail(base::sort(Edad))
+base::sum(Edad) # Sum of all values
+base::min(Edad) # Minimum value
+base::which.min(Edad) # Minimum value location (e.g., row number)
+base::max(Edad) # Maximum value
+base::which.max(Edad) # Maximum value location (i.e., row number)
+base::range(Edad) # Range of values, minimum to maximum
+base::length(Edad) # Number of occurrences (e.g., N, datapoints)
+stats::quantile(Edad) # Quantile scores, 0% 25% 50% 75% 100%
+stats::quantile(dat.df$Edad, # Use of stats::quantile() function to produce
+                prob=seq(0, 1, length=11), type=5) # deciles, 0% 10% 20% 30% 40% 50% 60% 70% 80% 90%
+
+base::mean(Edad, na.rm=TRUE)
+base::mean(Edad, trim = .1, na.rm=TRUE)
+base::mean(Edad, trim = .05, na.rm=TRUE)
+psych::geometric.mean(Edad)
+psych::harmonic.mean(Edad)
+psych::winsor.mean(Edad, trim=0.05)
+stats::median(Edad, na.rm=TRUE)
+asbio::Mode(Edad)
+
+stats::sd(Edad, na.rm=TRUE) # Standard deviation
+stats::IQR(Edad, na.rm=TRUE)
+mad(Edad)
+stats::var(Edad, na.rm=TRUE) # Variance
+stats::var(dat.df$Edad) # Variance
+
+### Multiple Statistics ####
+# Boxplot Statistics: Lower-Whisker, Lower-Hinge, Mean, Median, Upper-Hinge, and Upper-Whisker, N, and Outliers
+grDevices::boxplot.stats(Edad)
+RcmdrMisc::numSummary(Edad,
+                      statistics=c("mean", "mode", "sd", "quantiles", "CV", "var"))
+pastecs::stat.desc(Edad,
+                   basic=FALSE, desc=FALSE, norm=FALSE)
+psych::describe(Edad, fast=TRUE)
+base::summary(Edad)
+doBy::descStat(Edad) #Note only put Edad dued to dat.df is already attached
+tables::tabular((Edad) ~ (n=1) + Format(digits=2)*
+                  (min + mode + mean + sd + median + IQR + mad + var + max))
+
+s20x::summaryStats(Edad ~ Sexo,
+                   data=dat.df,
+                   na.rm=TRUE)
+
+### Multiple Group Statistics ####
+s20x::summaryStats(Edad, ~ Sexo, dat.df,
+                   na.rm=TRUE) # Accommodate missing values
+RcmdrMisc::numSummary(dat.df[,c("Edad")],
+                      groups=Sexo) # Default printout, breakouts by Section
+pivottabler::qpvt(dat.df, "Sexo", "Procedencia",
+                  c("Mean Edad"="mean(Edad, na.rm=TRUE)",
+                    "Median Edad"="median(Edad, na.rm=TRUE)",
+                    "SD Edad"="sd(Edad, na.rm=TRUE)"),
+                  formats=list("%.0f", "%.1f"))
+epiDisplay::summ(dat.df$Edad,
+                 by=Sexo, # Breakout statistics
+                 graph=TRUE, # Dotplot
+                 pch=20, ylab="auto",
+                 main="Sorted Dotplot of Edad (Años) por Procedencia",
+                 cex.X.axis=1.25, # Note X axis label size.
+                 cex.Y.axis=1.25, # Note Y axis label size.
+                 font.lab=2, dot.col="auto")
+
+
+
+
+
+## TABLES -----------------------------------------------------------------
+library(tables)
+### Tabla 1: Características Sociodemográficas de los Pacientes con Intento de Suicidio HSLV 2019. ####
+theme_gtsummary_mean_sd(set_theme = TRUE)
+reset_gtsummary_theme()
+theme_gtsummary_journal(journal = "jama") # Setting theme `JAMA`
+theme_gtsummary_compact () # Setting theme `Compact`
+theme_gtsummary_language() # All {gtsummary} tables can be translated into another language using 
+theme_gtsummary_language(language = "es")
+
+t1su <- dat.df %>% select(c(Edad, Sexo, `Estado Civil`, ETNIA, OCUPACION, `Seguridad Social`)) %>%
+  tbl_summary(
+    by = NULL,
+    label = list(Edad ~"Edad (Años)", Sexo ~"Sexo", `Estado Civil` ~ "Estado Civil", ETNIA ~ "Grupo Poblacional", OCUPACION ~ "Actividad Laboral", `Seguridad Social` ~ "Seguridad Social"),
+    statistic = NULL,
+    digits = all_continuous() ~ 0,
+    type = NULL,
+    value = NULL,
+    missing = "ifany",
+    missing_text = "Sin Información",
+    sort = NULL,
+    percent = NULL,
+    include = everything()
+  )%>%
+  add_ci(pattern = "{stat} ({ci})") %>%
+  modify_header(label = "**Características**", stat_0 = "**N = 154** (**95% IC**)") %>% # update the column header
+  modify_footnote(stat_0 = "IC = Intervalo de Confianza", abbreviation = TRUE) %>%
+    modify_caption("**Tabla 1: Caracterización sociodemográfica de los usuarios de consulta externa de la Empresa social del estado Centro I Unidad de atención en salud Cajibío-Cauca. 2023.**") %>% #  update title
+  bold_labels() %>%
+  italicize_levels()
+
+show_header_names(t1su)
+
+# Print Table
+as_gt(t1su) %>% # convert to gt table
+  gt::gtsave( # save table as image
+    filename = "Tabla 1.html" # use extensions .png, .html, .docx, .rtf, .tex, .ltx
+  )
+### Tabla 2: Caracterización de los factores de riesgo para el desarrollo de Diabetes Mellitus tipo 2 de los usuarios de consulta externa de la Empresa social del estado Centro I Unidad de atención en salud Cajibío-Cauca. 2023.####
+theme_gtsummary_mean_sd(set_theme = TRUE)
+reset_gtsummary_theme()
+theme_gtsummary_journal(journal = "jama") # Setting theme `JAMA`
+theme_gtsummary_compact () # Setting theme `Compact`
+theme_gtsummary_language() # All {gtsummary} tables can be translated into another language using 
+theme_gtsummary_language(language = "es")
+
+t2su <- dat.df %>% select(c(IMC, PERIMETRO_MUJERES, PERIMETROS_HOMBRES,
+                            `Ejercicio (30 minutos diarios)`,
+                            `Consumo de frutas y verduras`, `Medicación para HTA`,
+                            `Antecedente de glicemia alterada`,`Familiares con antecedente de Diabetes`,
+                            `Puntaje Findrisc`, GLUCEMIA_AYUNAS)) %>%
+  tbl_summary(
+    by = NULL,
+    label = list(IMC ~ "Índice de masa corporal Kg/m2", PERIMETRO_MUJERES ~ "Perímetro de cintura (Mujeres)", 
+                 PERIMETROS_HOMBRES ~ "Perímetro de cintura (Hombres)",
+                 `Ejercicio (30 minutos diarios)` ~ "Ejercicio (30 minutos diarios",
+                 `Consumo de frutas y verduras` ~ "Consumo de frutas y verduras",
+                 `Medicación para HTA` ~ "Medicación para HTA",
+                 `Antecedente de glicemia alterada` ~ "Antecedente de glicemia alterada",
+    `Familiares con antecedente de Diabetes` ~ "Familiares con antecednte de Diabetes",
+    `Puntaje Findrisc` ~ "Puntaje Findrisc", GLUCEMIA_AYUNAS ~ "Glucemia en ayunas (mg/dL)"), 
+    statistic = NULL,
+    digits = all_continuous() ~ 0,
+    type = NULL,
+    value = NULL,
+    missing = "no",
+    missing_text = NULL,
+    sort = NULL,
+    percent = NULL,
+    include = everything()
+  )%>%
+  add_ci(pattern = "{stat} ({ci})") %>%
+  modify_header(label = "**Características**", stat_0 = "**N = 154** (**95% IC**)") %>% # update the column header
+  modify_footnote(stat_0 = "IC = Intervalo de Confianza", abbreviation = TRUE) %>%
+  modify_caption("**Tabla 2: Caracterización de los factores de riesgo para el desarrollo de Diabetes Mellitus tipo 2 de los usuarios de consulta externa de la Empresa social del estado Centro I Unidad de atención en salud Cajibío-Cauca. 2023.**") %>% #  update title
+  bold_labels() %>%
+  italicize_levels()
+
+show_header_names(t1su)
+
+# Print Table
+as_gt(t2su) %>% # convert to gt table
+  gt::gtsave( # save table as image
+    filename = "Tabla 2.html" # use extensions .png, .html, .docx, .rtf, .tex, .ltx
+  )
+
+### Tabla 3: Análisis de las variables sociodemográficas y el riesgo de desarrollo de Diabetes Mellitus tipo 2 de los usuarios de consulta externa la empresa social del estado centro I unidad de atención Cajibío – Cauca 2023. ####
+reset_gtsummary_theme()
+theme_gtsummary_journal(journal = "jama") # Setting theme `JAMA`
+theme_gtsummary_compact () # Setting theme `Compact`
+theme_gtsummary_language() # All {gtsummary} tables can be translated into another language using 
+theme_gtsummary_language(language = "es")
+
+
+# Bivariate Analysis
+t3bva <-
+  tbl_summary(
+    dat.df,
+    include = c(Sexo, "Grupo Poblacional", Procedencia, Pareja, Ingresos, 
+                "Formación Académica", "Seguridad Social", `Edad (años)`, 
+                `Índice de masa corporal Kg/m2`, `Perímetro de cintura (Hombres)`, 
+                `Perímetro de cintura (Mujeres)`, `Ejercicio (30 minutos diarios)`, 
+                `Consumo de frutas y verduras`, `Medicación para HTA`, 
+                `Antecedente de glicemia alterada`, `Familiares con antecedente de Diabetes`),
+    by = rdm2, # split table by group
+    percent = "cell",
+    missing = "no" # don't list missing data separately
+  ) %>%
+  add_n() %>% # add column with total number of non-missing observations
+  add_p() %>%
+  bold_p(t = 0.049) # test for a difference between groups
+
+m1 <- glm(rdm2 ~ Procedencia, dat.df, family = binomial)
+summary(m1)$coefficients
+tbl_regression(m1, exponentiate = TRUE)
+
+# Logistic Regression
+t3lre <- tbl_uvregression(
+  dat.df[c("Sexo", "Grupo Poblacional", "Procedencia", "Pareja", "Ingresos", 
+           "Formación Académica", "Seguridad Social", "Edad (años)", 
+           "Índice de masa corporal Kg/m2", "Perímetro de cintura (Hombres)", 
+           "Perímetro de cintura (Mujeres)", "Ejercicio (30 minutos diarios)", 
+           "Consumo de frutas y verduras", "Medicación para HTA", 
+           "Antecedente de glicemia alterada", 
+           "Familiares con antecedente de Diabetes")],
+  method = glm,
+  y = rdm2,
+  method.args = list(family = binomial),
+  exponentiate = TRUE
+) %>%
+  add_n() %>% # add column with total number of non-missing observations
+  bold_p(t = 0.049)
+
+show_header_names(t3uv)
+
+# Merge Tables
+t3acruv <-
+  tbl_merge(
+    tbls = list(t3asu,t3auv)
+  )
+
+
+# Second sub-Table Crosstables by Summary tables
+t3bsu <-
+  tbl_summary(
+    dat.df,
+    include = c(`Edad (años)`, `Índice de masa corporal Kg/m2`, `Perímetro de cintura (Hombres)`, `Perímetro de cintura (Mujeres)`, `Ejercicio (30 minutos diarios)`, `Consumo de frutas y verduras`, `Medicación para HTA`, `Antecedente de glicemia alterada`, `Familiares con antecedente de Diabetes`),
+    by = rdm2, # split table by group
+    percent = "cell",
+    missing = "no" # don't list missing data separately
+  ) %>%
+  add_n() %>% # add column with total number of non-missing observations
+  add_p() %>%
+  bold_p(t = 0.049)
+
+# Univariate Analysis
+t3buv <- tbl_uvregression(
+  dat.df[c("Edad (años)", "Índice de masa corporal Kg/m2", "Perímetro de cintura (Hombres)", "Perímetro de cintura (Mujeres)", "Ejercicio (30 minutos diarios)", "Consumo de frutas y verduras", "Medicación para HTA", "Antecedente de glicemia alterada", "Familiares con antecedente de Diabetes")],
+  method = glm,
+  y = rdm2,
+  method.args = list(family = binomial),
+  exponentiate = TRUE
+) %>%
+  bold_p(t = 0.049)
+
+# Merge Tables
+t3bcruv <-
+  tbl_merge(
+    tbls = list(t3bsu,t3buv)
+  )
+
+
+## Stack the tables
+row1 <- tbl_merge(list(t3acruv))
+row2 <- tbl_merge(list(t3bcruv))
+
+t3at3bcruv <-  
+tbl_stack(list(row1, row2)) %>%
+  modify_header(label = "**Características**", estimate_2_1 = "**ORc** **(95% IC)**") %>% # update the column header
+  modify_spanning_header(update = everything() ~ "**Riesgo de Diabetes Mellitus tipo 2**") %>% # update columns
+  modify_footnote(estimate_2_1 = "ORc = Odds Ratio Crudo; IC = Intervalo de Confianza", abbreviation = TRUE) %>%
+  modify_caption("**Tabla 3: Análisis de las variables sociodemográficas y factores de riesgo en el desarrollo de Diabetes Mellitus tipo 2**") %>% #  update title
+  bold_labels() %>%
+  italicize_levels()
+
+show_header_names(t3at3bcruv)
+
+
+# Print Table
+as_gt(t3at3bcruv) %>% # convert to gt table
+  gt::gtsave( # save table as image
+    filename = "Tabla 3.html" # use extensions .png, .html, .docx, .rtf, .tex, .ltx
+  )
+
+### Tabla 4: Análisis multivariado de las características sociodemográficas y factores de riesgo para el desarrollo de Diabetes Mellitus tipo 2 en los usuarios de consulta externa la empresa social del estado centro I unidad de atención Cajibío – Cauca 2023. ####
+
+## Multivariate analysis
+t4re <-
+  glm(rdm2 ~ `Edad (años)` + Procedencia + `Formación Académica` + `Medicación para HTA` + `Antecedente de glicemia alterada` + `Familiares con antecedente de Diabetes`, dat.df, family = binomial(link = "logit")) %>%
+  tbl_regression(exponentiate = TRUE) %>%
+  add_n() %>% # add column with total number of non-missing observations
+    bold_p(t = 0.05) %>%
+  modify_header(label = "**Características**", stat_n = "**N**", estimate = "**ORa**", ci = "**(95% IC)**", p.value = "**p-valor**") %>% # update the column header
+  modify_spanning_header(all_stat_cols() ~ "**Riesgo de Diabetes Mellitus Tipo 2 (Análisis Multivariado)**") %>%
+  modify_footnote(estimate = "ORc = Odds Ratio Ajustado", ic = "IC = Intervalo de Confianza", abbreviation = TRUE) %>%
+    modify_caption("**Tabla 4: Análisis Multivariado de las características sociodemográficas y factores de riesgo para el desarrollo de Diabetes Mellitus tipo 2 en los usuarios de consulta externa la empresa social del estado centro I unidad de atención Cajibío – Cauca 2023.**") %>% #  update title
+  bold_labels()
+
+show_header_names(t4re)
+
+m1 <- glm(rdm2 ~ `Edad (años)` + Procedencia + `Formación Académica` +  `Medicación para HTA` + `Antecedente de glicemia alterada` + `Familiares con antecedente de Diabetes`, dat.df, family = binomial)
+summary(m1)$coefficients
+tbl_regression(m1, exponentiate = TRUE)
+
+# Print Table
+as_gt(t4re) %>% # convert to gt table
+  gt::gtsave( # save table as image
+    filename = "Tabla 4.docx" # use extensions .png, .html, .docx, .rtf, .tex, .ltx
+  )
+
+### Tabla 4: Análisis multivariado EN COEFICIENTES de las características sociodemográficas y factores de riesgo para el desarrollo de Diabetes Mellitus tipo 2 en los usuarios de consulta externa la empresa social del estado centro I unidad de atención Cajibío – Cauca 2023. ####
+
+## Multivariate analysis
+t4reC <-
+  glm(rdm2 ~ `Edad (años)` + Procedencia + `Formación Académica` + `Medicación para HTA` + `Antecedente de glicemia alterada` + `Familiares con antecedente de Diabetes`, dat.df, family = binomial(link = "logit")) %>%
+  tbl_regression(exponentiate = FALSE) %>%
+  add_n() %>% # add column with total number of non-missing observations
+  bold_p(t = 0.05) %>%
+  modify_header(label = "**Características**", stat_n = "**N**", estimate = "**ORa**", ci = "**(95% IC)**", p.value = "**p-valor**") %>% # update the column header
+  modify_spanning_header(all_stat_cols() ~ "**Riesgo de Diabetes Mellitus Tipo 2 (Análisis Multivariado)**") %>%
+  modify_footnote(estimate = "ORc = Odds Ratio Ajustado", ic = "IC = Intervalo de Confianza", abbreviation = TRUE) %>%
+  modify_caption("**Tabla 4: Análisis Multivariado de las características sociodemográficas y factores de riesgo para el desarrollo de Diabetes Mellitus tipo 2 en los usuarios de consulta externa la empresa social del estado centro I unidad de atención Cajibío – Cauca 2023.**") %>% #  update title
+  bold_labels()
+
+show_header_names(t4reC)
+
+m1 <- glm(rdm2 ~ `Edad (años)` + Procedencia + `Formación Académica` +  `Medicación para HTA` + `Antecedente de glicemia alterada` + `Familiares con antecedente de Diabetes`, dat.df, family = binomial)
+summary(m1)$coefficients
+tbl_regression(m1, exponentiate = TRUE)
+
+# Print Table
+as_gt(t4reC) %>% # convert to gt table
+  gt::gtsave( # save table as image
+    filename = "Tabla 4 Coef.docx" # use extensions .png, .html, .docx, .rtf, .tex, .ltx
+  )
+
+## GRAPHICS -----------------------------------------------------------------
+
+### Barplot Imagen 1: Características Socio-Demográficas de los Pacientes con Intento de Suicidio HSLV 2019 #### 
+par(ask=TRUE)
+ggplot2::ggplot(dat.df) + #DATA
+  aes(x = factor(FORMACION),
+      y = prop.table(stat(count)),
+      fill= factor(`Edad (años)`),
+      label = scales::percent(prop.table(stat(count)))) + #AESTHETICS
+  geom_bar(position = "dodge") +
+  geom_text(stat = "count",
+            position = position_dodge(.9),
+            vjust = -0.1,
+            size = 3) +
+  scale_y_continuous(labels = scales::percent) +
+  ggtitle("Imagen 1: Edad, Procedencia, Escolaridad y Puntaje de la escala Findrisc de los usuarios \nde consulta externa de la empresa social del estado centro I unidad en salud Cajibío – Cauca 2023.") +
+  xlab("Formación Académica") +
+  ylab("% de Pacientes") +
+  labs(fill = "Edad (años)") +
+  scale_alpha() +
+  scale_fill_brewer(palette = "Set1") +
+  facet_grid(Procedencia ~ `Puntaje Findrisc`,labeller = "label_both") + #FACETS
+  theme_grey() + #VISUAL THEMES
+  theme(panel.background = element_rect(fill = "#72efdd")) +
+theme(plot.title = element_text(size = 14, face = "bold")
+)
+
+ggsave(file = "Imagen 1.jpg") # Export ggplot2 plot
+ggsave(file = "Imagen 1.eps") # Export ggplot2 plot
+
+ggplot2::ggsave(filename = "tPlot.eps", 
+                plot = img1, 
+                device = "eps", 
+                dpi = 1200, 
+                width = 15,
+                height = 10, 
+                units = "cm")
+  
+gridExtra::grid.arrange(
+  BarSexo,
+  BarEstadoCivil,
+  BarProcedencia,
+  BarEstrato,
+  ncol=2, nrow=2,
+  top = textGrob("Imagen 2: Sexo, Estado Civil, Procedencia y Estrato Socio-Económico de los Pacientes con Intento de Suicidio HSLV 2019",
+                 gp=gpar(fontsize=15,
+                         font=1)))
+
+theme(legend.position = "bottom", legend.direction = "horizontal",
+      legend.title = element_blank()) +
+  
+
+# EXIT --------------------------------------------------------------------
+
+getwd() # Identify the current working directory.
+ls() # List all objects in the working
+# directory.
+ls.str() # List all objects, with finite detail.
+list.files() # List files at the PC directory.
+save.image("Id_FR_DMII.rdata")
+getwd() # Identify the current working directory.
+ls() # List all objects in the working
+# directory.
+ls.str() # List all objects, with finite detail.
+list.files() # List files at the PC directory.
+alarm() # Alarm, notice of upcoming action.
+q() # Quit this session.
+# Prepare for Save workspace image? query.
+

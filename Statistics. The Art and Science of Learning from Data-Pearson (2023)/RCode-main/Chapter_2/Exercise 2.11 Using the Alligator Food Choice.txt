@@ -1,0 +1,22 @@
+# Provide the url for the data:
+path <- 'https://raw.githubusercontent.com/artofstat/data/master/alligatorfood.csv'
+# Read in the file:
+foodchoice <- read.csv(path)
+# Inspect first few rows:
+head(foodchoice)
+# Create Frequency Table:
+freqtable <- table(foodchoice$food)
+freqtable
+# Get proportions:
+prop.table(freqtable)
+# Create barchart, add labels and color:
+barplot(freqtable, main='Barchart', xlab='Primary Food Choice', ylab='Count', col=rainbow(5))
+# Using Percentages instead of counts
+perctable <- 100*prop.table(freqtable) # percentages
+barplot(perctable, main='Barchart', xlab='Primary Food Choice', ylab='Percent (%)', col=rainbow(5)) # Barchart with Percentages
+# Pareto Chart, also using Percent
+index <- c(2,3,4,5,1) # sort categories
+barplot(perctable[index], main='Pareto Chart', xlab='Primary Food Choice', ylab='Percent (%)', col=rainbow(5)[index])
+# Pie Chart:
+pie(freqtable, main='Piechart', col=rainbow(5))
+ 
