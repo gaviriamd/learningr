@@ -1549,6 +1549,9 @@ pmap(lst, gcd)
 lst <- list(a,b)
 pmap_dbl(lst, gcd)
 
+## 6.7 Applyinga Function to Groups of Data ####
+
+
 # EXIT --------------------------------------------------------------------
 getwd() # Identify the current working directory.
 ls() # List all objects in the working

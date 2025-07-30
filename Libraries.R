@@ -45,7 +45,7 @@ install.packages("tables", dependencies=TRUE)
 install.packages("UsingR", dependencies=TRUE)
 install.packages("waffle", dependencies=TRUE)
 
-# OPEN LIBRARIES ####
+# OPEN ALL LIBRARIES ####
 library(arsenal)
 library(asbio)
 library(coin)
@@ -90,4 +90,7 @@ library(tidyverse)
 library(UsingR)
 library(waffle)
 
+# OPEN LIBRARIES ####
+library(lubridate)
+library(tidyverse)
 
